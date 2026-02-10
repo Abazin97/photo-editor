@@ -52,8 +52,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
             ),
           ),
           Positioned(
-            top: 30,
-            //right: 20,
+            top: 40,
             child: Image.asset(
               "assets/pattern.png",
               fit: BoxFit.contain,

@@ -25,6 +25,8 @@ class _LoginPageState extends State<LoginPage> {
 
   void login() async{
     await context.read<AuthNotifier>().signIn(email: emailController.text, password: passwordController.text); 
+    emailController.clear();
+    passwordController.clear();
     if (!mounted)return;
     Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));
   }
@@ -47,7 +49,6 @@ class _LoginPageState extends State<LoginPage> {
           ),
           Positioned(
             top: 30,
-            //right: 20,
             child: Image.asset(
               "assets/pattern.png",
               fit: BoxFit.contain,
