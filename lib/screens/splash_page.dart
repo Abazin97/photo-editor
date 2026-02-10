@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:test_task/screens/login_page.dart';
 
 class SplashPage extends StatefulWidget {
@@ -34,7 +35,7 @@ class _SplashPageState extends State<SplashPage> {
             ),
           ),
           Positioned(
-            top: 30,
+            top: 30.r,
             //right: 20,
             child: Image.asset(
               "assets/pattern.png",

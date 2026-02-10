@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PainterPage extends StatefulWidget {
   const PainterPage({super.key});
@@ -18,10 +19,10 @@ class _PainterPageState extends State<PainterPage> {
               preferredSize: Size.fromHeight(120),
               child: ClipRRect(
                 borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(8),
+                  bottom: Radius.circular(8.r),
                 ),
                 child: Container(
-                  height: 100,
+                  height: 100.r,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.centerLeft,
@@ -36,8 +37,8 @@ class _PainterPageState extends State<PainterPage> {
                     boxShadow: [
                       BoxShadow(
                         color: Color.fromARGB(255, 7, 27, 48).withValues(alpha: 0.8),
-                        blurRadius: 8,
-                        offset: Offset(0, 4),
+                        blurRadius: 8.r,
+                        offset: Offset(0, 4.r),
                       ),
                     ],
                   ),
@@ -45,7 +46,7 @@ class _PainterPageState extends State<PainterPage> {
                     children: [
                       Spacer(),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
+                        padding: EdgeInsets.only(bottom: 10.r),
                         child: Stack(
                           alignment: Alignment.center,
                           children: [
@@ -55,7 +56,7 @@ class _PainterPageState extends State<PainterPage> {
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 20,
+                                  fontSize: 20.r,
                                 ),
                               ),
                             ),
@@ -64,8 +65,8 @@ class _PainterPageState extends State<PainterPage> {
                               child: GestureDetector(
                                 child: Image.asset(
                                   "assets/fi-rr-angle-small-left.png",
-                                  width: 40,
-                                  height: 40,
+                                  width: 40.r,
+                                  height: 40.r,
                                 ),
                                 onTap: () {
                                   Navigator.pop(context);
@@ -77,8 +78,8 @@ class _PainterPageState extends State<PainterPage> {
                               child: GestureDetector(
                                 child: Image.asset(
                                   "assets/fi-rr-check.png",
-                                  width: 40,
-                                  height: 40,
+                                  width: 40.r,
+                                  height: 40.r,
                                 ),
                                 onTap: () {
                                   Navigator.pop(context);
@@ -108,15 +109,35 @@ class _PainterPageState extends State<PainterPage> {
                   ),
                 ),
                 Positioned(
-                  top: 5,
+                  top: 5.r,
                   left: 0,
                   right: 0,
                   child: Image.asset(
                     "assets/pattern.png",
                     fit: BoxFit.contain,
-                    width: 380,
+                    width: 380.r,
                   ),
                 ),
+                Positioned(child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(onPressed: (){
+
+                    }, icon: Image.asset("assets/Frame 13.png"),),
+                    IconButton(onPressed: (){
+
+                    }, icon: Image.asset("assets/Frame 12.png"),),
+                    IconButton(onPressed: (){
+
+                    }, icon: Image.asset("assets/Frame 11.png"),),
+                    IconButton(onPressed: (){
+
+                    }, icon: Image.asset("assets/Frame 10.png"),),
+                    IconButton(onPressed: (){
+
+                    }, icon: Image.asset("assets/Frame 9.png"),)
+                  ],
+                ))
               ],
             ),
           ),

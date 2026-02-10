@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:test_task/bloc/auth_notifier.dart';
 import 'package:test_task/screens/painter_page.dart';
 
@@ -32,7 +33,7 @@ class _HomePageState extends State<HomePage> {
               preferredSize: Size.fromHeight(120),
               child: ClipRRect(
                 borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(8),
+                  bottom: Radius.circular(8.r),
                 ),
                 child: Container(
                   height: 100,
@@ -50,8 +51,8 @@ class _HomePageState extends State<HomePage> {
                     boxShadow: [
                       BoxShadow(
                         color: Color.fromARGB(255, 7, 27, 48).withValues(alpha: 0.8),
-                        blurRadius: 8,
-                        offset: Offset(0, 4),
+                        blurRadius: 8.r,
+                        offset: Offset(0, 4.r),
                       ),
                     ],
                   ),
@@ -59,7 +60,7 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       Spacer(),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
+                        padding: EdgeInsets.only(bottom: 10.r),
                         child: Stack(
                           alignment: Alignment.center,
                           children: [
@@ -69,17 +70,17 @@ class _HomePageState extends State<HomePage> {
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 20,
+                                  fontSize: 20.r,
                                 ),
                               ),
                             ),
                             Positioned(
-                              left: 8,
+                              left: 8.r,
                               child: GestureDetector(
                                 child: Image.asset(
                                   "assets/Login 2.png",
-                                  width: 40,
-                                  height: 40,
+                                  width: 40.r,
+                                  height: 40.r,
                                 ),
                                 onTap: () {
                                   signOut();
@@ -109,13 +110,13 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 Positioned(
-                  top: 5,
+                  top: 5.r,
                   left: 0,
                   right: 0,
                   child: Image.asset(
                     "assets/pattern.png",
                     fit: BoxFit.contain,
-                    width: 380,
+                    width: 380.r,
                   ),
                 ),
               ],
@@ -125,15 +126,15 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: EdgeInsets.symmetric(horizontal: 20.r),
         child: SizedBox(
           width: double.infinity,
-          height: 50,
+          height: 50.r,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.deepPurpleAccent[400],
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: BorderRadius.circular(6.r),
               ), 
             ),
             onPressed: () {

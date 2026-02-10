@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:test_task/bloc/auth_notifier.dart';
 
 
@@ -16,6 +17,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController passwordConfirmController = TextEditingController();
   final formKey = GlobalKey<FormState>();
+  bool fieldsFilled = false;
 
   @override
   void dispose() {
@@ -33,6 +35,15 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   void popPage() {
     Navigator.pop(context);
+  }
+
+  void checkFieldsFilled() {
+    setState(() {
+      fieldsFilled = nameController.text.trim().isNotEmpty &&
+          emailController.text.trim().isNotEmpty &&
+          passwordController.text.trim().isNotEmpty &&
+          passwordConfirmController.text.trim().isNotEmpty;
+    });
   }
 
   @override
@@ -69,7 +80,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text("Регистрация", style: TextStyle(color: Colors.white, fontSize: 26),),
-                    SizedBox(height: 10),
+                    SizedBox(height: 10.r),
                     Container(
                       height: 85,
                       decoration: BoxDecoration(
@@ -90,27 +101,30 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           ),
                         ],
                         // color: Colors.transparent,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(8.r),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 10),
+                        padding: EdgeInsets.only(left: 20.r, right: 20.r, bottom: 10.r),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.only(top: 5),
-                              child: Text("Имя", style: TextStyle(color: Colors.blueGrey[300]),),
+                              padding: EdgeInsets.only(top: 5.r),
+                              child: Text("Имя", style: TextStyle(color: Colors.blueGrey[300], fontSize: 14.r),),
                             ),
                             TextField(
+                              onChanged: (_){
+                                checkFieldsFilled();
+                              },
                               controller: nameController,
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 18,
+                                fontSize: 18.r,
                               ),
                               decoration: InputDecoration(
                                 hint: Text("Введите ваше имя", style: TextStyle(color: Colors.blueGrey[300]),),
                                 focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.blueGrey, width: 1),
+                                  borderSide: BorderSide(color: Colors.blueGrey, width: 1.r),
                                 ),
                               ),
                             ),
@@ -139,22 +153,25 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           ),
                         ],
                         // color: Colors.transparent,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(8.r),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 10),
+                        padding: EdgeInsets.only(left: 20.r, right: 20.r, bottom: 10.r),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.only(top: 5),
-                              child: Text("e-mail", style: TextStyle(color: Colors.blueGrey[300]),),
+                              padding: EdgeInsets.only(top: 5.r),
+                              child: Text("e-mail", style: TextStyle(color: Colors.blueGrey[300], fontSize: 14.r),),
                             ),
                             TextField(
                               controller: emailController,
+                              onChanged: (_){
+                                checkFieldsFilled();
+                              },
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 18,
+                                fontSize: 18.r,
                               ),
                               decoration: InputDecoration(
                                 hint: Text("Ваша электронная почта", style: TextStyle(color: Colors.blueGrey[300]),),
@@ -167,9 +184,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 16),
+                    SizedBox(height: 16.r),
                     Container(
-                      height: 85,
+                      height: 85.r,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           begin: Alignment.centerLeft,
@@ -188,29 +205,32 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           ),
                         ],
                         // color: Colors.transparent,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(8.r),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 10),
+                        padding: EdgeInsets.only(left: 20.r, right: 20.r, bottom: 10.r),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.only(top: 5),
-                              child: Text("Пароль", style: TextStyle(color: Colors.blueGrey[300]),),
+                              padding: EdgeInsets.only(top: 5.r),
+                              child: Text("Пароль", style: TextStyle(color: Colors.blueGrey[300], fontSize: 14.r),),
                             ),
                             TextField(
                               controller: passwordController,
+                              onChanged: (_){
+                                checkFieldsFilled();
+                              },
                               obscureText: true,
                               obscuringCharacter: '*',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 18,
+                                fontSize: 18.r,
                               ),
                               decoration: InputDecoration(
-                                hint: Text("8-16 символов", style: TextStyle(color: Colors.blueGrey[300]),),
+                                hint: Text("8-16 символов", style: TextStyle(color: Colors.blueGrey[300], fontSize: 14.r),),
                                 focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.blueGrey, width: 1),
+                                  borderSide: BorderSide(color: Colors.blueGrey, width: 1.r),
                                 ),
                               ),
                             ),
@@ -218,9 +238,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 16),
+                    SizedBox(height: 16.r),
                     Container(
-                      height: 85,
+                      height: 85.r,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           begin: Alignment.centerLeft,
@@ -238,20 +258,22 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             blurRadius: 5,
                           ),
                         ],
-                        // color: Colors.transparent,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 10),
+                        padding: EdgeInsets.only(left: 20.r, right: 20.r, bottom: 10.r),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.only(top: 5),
-                              child: Text("Подтверждение пароля", style: TextStyle(color: Colors.blueGrey[300]),),
+                              padding: EdgeInsets.only(top: 5.r),
+                              child: Text("Подтверждение пароля", style: TextStyle(color: Colors.blueGrey[300], fontSize: 14.r),),
                             ),
                             TextField(
                               controller: passwordConfirmController,
+                              onChanged: (_){
+                                checkFieldsFilled();
+                              },
                               obscureText: true,
                               obscuringCharacter: '*',
                               style: TextStyle(
@@ -271,28 +293,32 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     ),
                   ],
                 ),
-              )))
+              ))),  
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: EdgeInsets.symmetric(horizontal: 20.r),
         child: SizedBox(
           width: double.infinity,
-          height: 50,
+          height: 50.r,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white.withValues(alpha: 0.6),
+              backgroundColor: fieldsFilled ? Colors.white : Colors.white.withValues(alpha: 0.6),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: BorderRadius.circular(6.r),
               ), 
             ),
             onPressed: () {
-              if (formKey.currentState!.validate()) {
+              if (formKey.currentState!.validate() && emailController.text.trim().isNotEmpty && passwordController.text.trim().isNotEmpty && passwordConfirmController.text.trim().isNotEmpty) {
                 register();
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Пожалуйста, заполните все поля"))
+                );
               }
             },
-            child: Text("Зарегистрироваться", style: TextStyle(color: Colors.black.withValues(alpha: 0.7), fontSize: 16, fontWeight: FontWeight.bold))),
+            child: Text("Зарегистрироваться", style: TextStyle(color: fieldsFilled ? Colors.black : Colors.black.withValues(alpha: 0.7), fontSize: 16.r, fontWeight: FontWeight.bold))),
         ),
       ),   
     );

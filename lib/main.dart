@@ -5,6 +5,7 @@ import 'package:test_task/screens/splash_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:test_task/services/auth_service.dart';
 import 'firebase_options.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,9 +23,12 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: SplashPage()
+    return ScreenUtilInit(
+      designSize: MediaQuery.of(context).size,
+      child: const MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: SplashPage()
+      ),
     );
   }
 }

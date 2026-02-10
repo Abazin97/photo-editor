@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:test_task/bloc/auth_notifier.dart';
 import 'package:test_task/screens/home_page.dart';
 import 'package:test_task/screens/registration_page.dart';
@@ -48,26 +49,26 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
           Positioned(
-            top: 30,
+            top: 30.r,
             child: Image.asset(
               "assets/pattern.png",
               fit: BoxFit.contain,
-              width: 380,
+              width: 380.r,
             ),
           ),
           Center(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.symmetric(horizontal: 20.r),
               child: Form(
                 key: formKey,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Вход", style: TextStyle(color: Colors.white, fontSize: 26),),
-                    SizedBox(height: 10),
+                    Text("Вход", style: TextStyle(color: Colors.white, fontSize: 26.r),),
+                    SizedBox(height: 10.r),
                     Container(
-                      height: 85,
+                      height: 85.r,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           begin: Alignment.centerLeft,
@@ -86,27 +87,27 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ],
                         // color: Colors.transparent,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(8.r),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 10),
+                        padding: EdgeInsets.only(left: 20.r, right: 20.r, bottom: 10.r),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.only(top: 5),
-                              child: Text("e-mail", style: TextStyle(color: Colors.blueGrey),),
+                              padding: EdgeInsets.only(top: 5.r),
+                              child: Text("e-mail", style: TextStyle(color: Colors.blueGrey[300], fontSize: 14.r),),
                             ),
                             TextField(
                               controller: emailController,
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 18,
+                                fontSize: 18.r,
                               ),
                               decoration: InputDecoration(
                                 hintText: "Введите электронную почту",
                                 focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.blueGrey, width: 1),
+                                  borderSide: BorderSide(color: Colors.blueGrey, width: 1.r),
                                 ),
                               ),
                             ),
@@ -135,16 +136,16 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ],
                         // color: Colors.transparent,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(8.r),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 10),
+                        padding: EdgeInsets.only(left: 20.r, right: 20.r, bottom: 10.r),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.only(top: 5),
-                              child: Text("Подтверждение пароля", style: TextStyle(color: Colors.blueGrey),),
+                              padding: EdgeInsets.only(top: 5.r),
+                              child: Text("Подтверждение пароля", style: TextStyle(color: Colors.blueGrey[300], fontSize: 14.r),),
                             ),
                             TextField(
                               controller: passwordController,
@@ -152,12 +153,12 @@ class _LoginPageState extends State<LoginPage> {
                               obscuringCharacter: '*',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 18,
+                                fontSize: 18.r,
                               ),
                               decoration: InputDecoration(
                                 hintText: "Введите пароль",
                                 focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.blueGrey, width: 1),
+                                  borderSide: BorderSide(color: Colors.blueGrey, width: 1.r),
                                 ),
                               ),
                             ),
@@ -187,8 +188,12 @@ class _LoginPageState extends State<LoginPage> {
                   ), 
                 ),
                 onPressed: () {
-                  if (formKey.currentState!.validate()) {
+                  if (formKey.currentState!.validate() && emailController.text.trim().isNotEmpty && passwordController.text.trim().isNotEmpty) {
                     login();
+                  }else{
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Пожалуйста, заполните все поля"))
+                    );
                   }
                 },
                 child: Text("Войти", style: TextStyle(color: Colors.white,fontSize: 16, fontWeight: FontWeight.bold))),
