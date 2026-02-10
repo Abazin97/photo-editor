@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:test_task/layout/auth_layout.dart';
 import 'package:test_task/screens/login_page.dart';
 
 class SplashPage extends StatefulWidget {
@@ -15,7 +16,7 @@ class _SplashPageState extends State<SplashPage> {
     super.initState();
     Future.delayed(Duration(seconds: 2), () {
       if (!mounted) return;
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const AuthLayout()));
     });
   }
   @override

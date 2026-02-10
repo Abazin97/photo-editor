@@ -45,5 +45,13 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Приложению требуется доступ к фотогалерее для сохранения изображений, созданных в приложении.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Приложению требуется доступ к фотогалерее для сохранения изображений, созданных в приложении.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Приложению требуется доступ к камере для выбора изображений из галереи и сохранения созданных изображений.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Приложению требуется доступ к микрофону для записи аудио.</string>
 </dict>
 </plist>

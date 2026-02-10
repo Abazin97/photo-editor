@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:test_task/bloc/auth_notifier.dart';
+import 'package:test_task/layout/auth_layout.dart';
 import 'package:test_task/screens/painter_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,7 +17,6 @@ class _HomePageState extends State<HomePage> {
   void signOut() async{
     await context.read<AuthNotifier>().signOut();
     if (!mounted)return;
-    popPage();
   }
 
   void popPage() {

@@ -1,5 +1,11 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class PainterPage extends StatefulWidget {
   const PainterPage({super.key});
@@ -9,6 +15,68 @@ class PainterPage extends StatefulWidget {
 }
 
 class _PainterPageState extends State<PainterPage> {
+
+  File? selectedImage;
+
+  Future<void> pickImage() async {
+    final picker = await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    if (picker == null) return;
+
+    setState(() {
+      selectedImage = File(picker.path);
+    });
+  }
+
+  Future<void> saveImage() async {
+    if (selectedImage == null) return;
+
+    await Permission.storage.request();
+    await Permission.photos.request();
+
+    final bytes = await selectedImage!.readAsBytes();
+    final imageStr = base64Encode(bytes);
+    print(imageStr);
+    // await ImageGallerySaver.saveImage(bytes);
+
+    // await FirebaseFirestore.instance.collection("images").add({
+    //   "path": selectedImage!.path,
+    //   "timestamp": FieldValue.serverTimestamp(),
+    // });
+    
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Изображение успешно сохранено"))
+    );
+  }
+
+  void showColorPicker() {
+      // showDialog(
+      //   context: context,
+      //   builder: (context) {
+      //     return AlertDialog(
+      //       title: Text('Выберите цвет'),
+      //       content: SingleChildScrollView(
+      //         child: BlockPicker(
+      //           pickerColor: Colors.black, // Текущий выбранный цвет
+      //           onColorChanged: (color) {
+      //             // Логика изменения цвета кисти
+      //           },
+      //         ),
+      //       ),
+      //       actions: [
+      //         TextButton(
+      //           onPressed: () {
+      //             Navigator.of(context).pop();
+      //           },
+      //           child: Text('Закрыть'),
+      //         ),
+      //       ],
+      //     );
+      //   },
+      // );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -118,14 +186,20 @@ class _PainterPageState extends State<PainterPage> {
                     width: 380.r,
                   ),
                 ),
+                if (selectedImage != null) Positioned.fill(
+                  child: Image.file(
+                    selectedImage!,
+                    fit: BoxFit.contain,
+                  ),
+                ),
                 Positioned(child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     IconButton(onPressed: (){
-
+                      saveImage();
                     }, icon: Image.asset("assets/Frame 13.png"),),
                     IconButton(onPressed: (){
-
+                      pickImage();
                     }, icon: Image.asset("assets/Frame 12.png"),),
                     IconButton(onPressed: (){
 
@@ -134,10 +208,11 @@ class _PainterPageState extends State<PainterPage> {
 
                     }, icon: Image.asset("assets/Frame 10.png"),),
                     IconButton(onPressed: (){
-
+                      showColorPicker();
                     }, icon: Image.asset("assets/Frame 9.png"),)
                   ],
-                ))
+                )),
+                //Positioned(child: selectedImage != null ? Image.file(selectedImage!) : Container(),)
               ],
             ),
           ),

@@ -14,7 +14,7 @@ void main() async{
   );
   runApp(
     BlocProvider(create: (_) => AuthNotifier(AuthService()),
-    child: MainApp(),),
+    child: const MainApp(),),
   );
 }
 
