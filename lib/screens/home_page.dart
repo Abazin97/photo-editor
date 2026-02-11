@@ -20,9 +20,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   initState() {
-    getImage();
     super.initState();
+    getImage();
   }
+
 
   Future<void> getImage() async {
     final prefs = await SharedPreferences.getInstance();
@@ -46,6 +47,7 @@ class _HomePageState extends State<HomePage> {
       images.add(base64Decode(convString));
     }
 
+    if (!mounted) return;
     setState(() {
       imageBytes = images;
     });

@@ -53,5 +53,7 @@
 	<string>Приложению требуется доступ к камере для выбора изображений из галереи и сохранения созданных изображений.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Приложению требуется доступ к микрофону для записи аудио.</string>
+	<key>NSUserNotificationUsageDescription</key>
+	<string>Приложению требуется доступ к уведомлениям для отображения уведомлений о сохранении изображений.</string>
 </dict>
 </plist>

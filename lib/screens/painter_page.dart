@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test_task/screens/home_page.dart';
+import 'package:test_task/services/notification_service.dart';
 
 class PainterPage extends StatefulWidget {
   final Uint8List? imageBytes;
@@ -80,6 +81,7 @@ class _PainterPageState extends State<PainterPage> {
     setState(() {
       isLoading = false;
     });
+    NotificationService().showNotification();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text("Изображение успешно сохранено"))
     );
@@ -237,7 +239,9 @@ class _PainterPageState extends State<PainterPage> {
                 Positioned.fill(
                   child: selectedImageBytes != null 
                     ? Image.memory(selectedImageBytes!, fit: BoxFit.contain,) 
-                    : Container(),
+                    : selectedImage != null 
+                      ? Image.file(selectedImage!) 
+                      : Container(),
                 ),
                 Positioned(child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -252,7 +256,7 @@ class _PainterPageState extends State<PainterPage> {
 
                     }, icon: Image.asset("assets/Frame 11.png"),),
                     IconButton(onPressed: (){
-
+                      NotificationService().showNotification();
                     }, icon: Image.asset("assets/Frame 10.png"),),
                     IconButton(onPressed: (){
                       showColorPicker();
