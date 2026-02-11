@@ -1,8 +1,12 @@
+import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test_task/bloc/auth_notifier.dart';
-import 'package:test_task/layout/auth_layout.dart';
 import 'package:test_task/screens/painter_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -13,10 +17,60 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List<Uint8List> imageBytes = [];
+
+  @override
+  initState() {
+    getImage();
+    super.initState();
+  }
+
+  Future<void> getImage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final idList = prefs.getStringList("image_doc_ids") ?? [];
+    if (idList.isEmpty) return;
+
+    List<Uint8List> images = [];
+
+    for (String docID in idList) {
+      final docRef = FirebaseFirestore.instance.collection("images").doc(docID);
+      final doc = await docRef.get();
+      if (!doc.exists) continue;
+
+      final chunksSnapshot = await docRef.collection("chunks").get();
+
+      final sortedChunks = chunksSnapshot.docs
+          .map((d) => MapEntry(int.parse(d.id), d.data()["data"] as String)).toList()
+        ..sort((a, b) => a.key.compareTo(b.key));
+
+      final convString = sortedChunks.map((e) => e.value).join();
+      images.add(base64Decode(convString));
+    }
+
+    // final docRef = FirebaseFirestore.instance.collection("images").doc(docID);
+    // final doc = await docRef.get();
+    // if (!doc.exists) return;
+
+    // final chunksSnapshot = await docRef.collection("chunks").get();
+
+    // final sortedChunks = chunksSnapshot.docs
+    //     .map((d) => MapEntry(int.parse(d.id), d.data()["data"] as String))
+    //     .toList()
+    //   ..sort((a, b) => a.key.compareTo(b.key));
+
+    // final fullBase64 = sortedChunks.map((e) => e.value).join();
+
+    setState(() {
+      // print("Количество чанков: ${sortedChunks.length}");
+      // print("Длина base64 строки: ${fullBase64.length}");
+
+      imageBytes = images;
+    });
+  }
+
 
   void signOut() async{
     await context.read<AuthNotifier>().signOut();
-    if (!mounted)return;
   }
 
   void popPage() {
@@ -119,6 +173,21 @@ class _HomePageState extends State<HomePage> {
                     width: 380.r,
                   ),
                 ),
+                Positioned.fill(child: imageBytes.isEmpty ? 
+                  Center(child: CircularProgressIndicator(),)
+                  : GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2
+                      ),
+                      itemCount: imageBytes.length, 
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: EdgeInsets.all(8.r),
+                          child: Image.memory(imageBytes[index], fit: BoxFit.cover,),
+                        );
+                      },
+                  )
+                )
               ],
             ),
           ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:test_task/layout/auth_layout.dart';
-import 'package:test_task/screens/login_page.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});

@@ -6,6 +6,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:test_task/screens/home_page.dart';
 
 class PainterPage extends StatefulWidget {
   const PainterPage({super.key});
@@ -17,6 +19,7 @@ class PainterPage extends StatefulWidget {
 class _PainterPageState extends State<PainterPage> {
 
   File? selectedImage;
+  bool isLoading = false;
 
   Future<void> pickImage() async {
     final picker = await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -29,6 +32,9 @@ class _PainterPageState extends State<PainterPage> {
   }
 
   Future<void> saveImage() async {
+    setState(() {
+      isLoading = true;
+    });
     if (selectedImage == null) return;
 
     await Permission.storage.request();
@@ -36,18 +42,45 @@ class _PainterPageState extends State<PainterPage> {
 
     final bytes = await selectedImage!.readAsBytes();
     final imageStr = base64Encode(bytes);
-    print(imageStr);
     // await ImageGallerySaver.saveImage(bytes);
 
-    // await FirebaseFirestore.instance.collection("images").add({
-    //   "path": selectedImage!.path,
-    //   "timestamp": FieldValue.serverTimestamp(),
-    // });
+    final imageChunks = splitString(imageStr, 10000);
+
+    final doc = FirebaseFirestore.instance.collection("images").doc();
+    final docID = doc.id;
+    await doc.set({
+      "count": imageChunks.length,
+      "createdAt": FieldValue.serverTimestamp(),
+    });
+    for (int i = 0; i < imageChunks.length; i++) {
+      await doc
+          .collection("chunks")
+          .doc(i.toString())
+          .set({"data": imageChunks[i]});
+    }
+
+
+    final prefs = await SharedPreferences.getInstance();
+    final idList = prefs.getStringList("image_doc_ids") ?? [];
+    idList.add(docID);
+    await prefs.setStringList("image_doc_ids", idList);
     
     if (!mounted) return;
+    setState(() {
+      isLoading = false;
+    });
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text("Изображение успешно сохранено"))
     );
+    popPage();
+  }
+
+  List<String> splitString(String str, int chunkSize) {
+    List<String> chunks = [];
+    for (var i = 0; i < str.length; i += chunkSize) {
+      chunks.add(str.substring(i, i + chunkSize > str.length ? str.length : i + chunkSize));
+    }
+    return chunks;
   }
 
   void showColorPicker() {
@@ -58,9 +91,9 @@ class _PainterPageState extends State<PainterPage> {
       //       title: Text('Выберите цвет'),
       //       content: SingleChildScrollView(
       //         child: BlockPicker(
-      //           pickerColor: Colors.black, // Текущий выбранный цвет
+      //           pickerColor: Colors.black,
       //           onColorChanged: (color) {
-      //             // Логика изменения цвета кисти
+      //             
       //           },
       //         ),
       //       ),
@@ -75,6 +108,10 @@ class _PainterPageState extends State<PainterPage> {
       //     );
       //   },
       // );
+  }
+
+  void popPage() {
+    Navigator.push(context, MaterialPageRoute(builder: (_) => HomePage()),);
   }
 
   @override
@@ -150,7 +187,7 @@ class _PainterPageState extends State<PainterPage> {
                                   height: 40.r,
                                 ),
                                 onTap: () {
-                                  Navigator.pop(context);
+                                  //popPage();
                                 },
                               ),
                             )
@@ -212,6 +249,12 @@ class _PainterPageState extends State<PainterPage> {
                     }, icon: Image.asset("assets/Frame 9.png"),)
                   ],
                 )),
+                Positioned.fill(child:  isLoading ? Container(
+                  color: Colors.black.withValues(alpha: 0.5),
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ) : Container())
                 //Positioned(child: selectedImage != null ? Image.file(selectedImage!) : Container(),)
               ],
             ),
