@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -29,8 +30,33 @@ class _RegistrationPageState extends State<RegistrationPage> {
   }
 
   void register() async{
-    await context.read<AuthNotifier>().signUp(email: emailController.text, password: passwordController.text); 
-    popPage();
+    try {
+      await context.read<AuthNotifier>().signUp(email: emailController.text, password: passwordController.text);
+      popPage();
+    }on FirebaseAuthException catch (e) {
+      String message = "Ошибка регистрации";
+      switch (e.code){
+        case "email-already-in-use":
+          message = "Пользователь с таким email уже существует";
+          break;
+        case "invalid-email":
+          message = "Неверный email";
+          break;
+        case "weak-password":
+          message = "Слабый пароль";
+          break;
+        default: message = e.message ?? "Ошибка";
+      }
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message))
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Неизвестная ошибка"))
+      );
+    }
   }
 
   void popPage() {

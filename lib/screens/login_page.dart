@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -24,12 +25,52 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void login() async{
-    await context.read<AuthNotifier>().signIn(email: emailController.text, password: passwordController.text); 
-    emailController.clear();
-    passwordController.clear();
-    if (!mounted)return;
-    Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));
+  void login() async {
+    try {
+      await context.read<AuthNotifier>().signIn(
+        email: emailController.text.trim(),
+        password: passwordController.text,
+      );
+      emailController.clear();
+      passwordController.clear();
+
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const HomePage()),
+      );
+
+    } on FirebaseAuthException catch (e) {
+      String message = "Ошибка входа";
+
+      switch (e.code) {
+        case 'user-not-found':
+          message = "Пользователь не найден";
+          break;
+        case 'wrong-password':
+          message = "Неверный пароль";
+          break;
+        case 'invalid-email':
+          message = "Неверный email";
+          break;
+        case 'invalid-credential':
+          message = "Неверные учетные данные";
+          break;
+        case 'too-many-requests':
+          message = "Слишком много попыток. Попробуйте позже";
+          break;
+        default:
+          message = e.message ?? "Ошибка";
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Неизвестная ошибка")),
+      );
+    }
   }
 
   @override

@@ -15,19 +15,11 @@ class AuthNotifier extends Cubit<User?> {
   }
 
   Future<void> signIn({required String email, required String password}) async {
-    try {
-      await _authService.signIn(email: email, password: password);
-    } catch (e) {
-      rethrow;
-    }
+    await _authService.signIn(email: email, password: password);
   }
 
   Future<void> signUp({required String email, required String password}) async {
-    try {
-      await _authService.signUp(email: email, password: password);
-    } catch (e) {
-      rethrow;
-    }
+    await _authService.signUp(email: email, password: password);
   }
 
   Future<void> signOut() async {

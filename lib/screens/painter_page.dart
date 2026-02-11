@@ -53,7 +53,7 @@ class _PainterPageState extends State<PainterPage> {
 
     final bytes = await selectedImage!.readAsBytes();
     final imageStr = base64Encode(bytes);
-    // await ImageGallerySaver.saveImage(bytes);
+    await ImageGallerySaver.saveImage(bytes);
 
     final imageChunks = splitString(imageStr, 10000);
 

@@ -8,12 +8,17 @@ class AuthService {
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
   Future<UserCredential> signIn({required String email, required String password}) async {
-
       return await _auth.signInWithEmailAndPassword(email: email, password: password);
   }
 
   Future<UserCredential> signUp({required String email, required String password}) async {
-    return await _auth.createUserWithEmailAndPassword(email: email, password: password);
+    try {
+      return await _auth.createUserWithEmailAndPassword(email: email, password: password);
+    } on FirebaseException catch (e) {
+      throw e;
+    }catch (e) {
+      throw Exception("Unexpected error");
+    }
   }
 
   Future<void> signOut() async {
