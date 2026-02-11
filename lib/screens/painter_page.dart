@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,7 +11,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test_task/screens/home_page.dart';
 
 class PainterPage extends StatefulWidget {
-  const PainterPage({super.key});
+  final Uint8List? imageBytes;
+  const PainterPage({super.key, this.imageBytes});
 
   @override
   State<PainterPage> createState() => _PainterPageState();
@@ -18,8 +20,17 @@ class PainterPage extends StatefulWidget {
 
 class _PainterPageState extends State<PainterPage> {
 
+  Uint8List? selectedImageBytes;
   File? selectedImage;
   bool isLoading = false;
+
+  @override
+  initState() {
+    if (widget.imageBytes != null) {
+      selectedImageBytes = widget.imageBytes;
+    }
+    super.initState();
+  }
 
   Future<void> pickImage() async {
     final picker = await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -223,11 +234,10 @@ class _PainterPageState extends State<PainterPage> {
                     width: 380.r,
                   ),
                 ),
-                if (selectedImage != null) Positioned.fill(
-                  child: Image.file(
-                    selectedImage!,
-                    fit: BoxFit.contain,
-                  ),
+                Positioned.fill(
+                  child: selectedImageBytes != null 
+                    ? Image.memory(selectedImageBytes!, fit: BoxFit.contain,) 
+                    : Container(),
                 ),
                 Positioned(child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,

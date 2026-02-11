@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -47,23 +46,7 @@ class _HomePageState extends State<HomePage> {
       images.add(base64Decode(convString));
     }
 
-    // final docRef = FirebaseFirestore.instance.collection("images").doc(docID);
-    // final doc = await docRef.get();
-    // if (!doc.exists) return;
-
-    // final chunksSnapshot = await docRef.collection("chunks").get();
-
-    // final sortedChunks = chunksSnapshot.docs
-    //     .map((d) => MapEntry(int.parse(d.id), d.data()["data"] as String))
-    //     .toList()
-    //   ..sort((a, b) => a.key.compareTo(b.key));
-
-    // final fullBase64 = sortedChunks.map((e) => e.value).join();
-
     setState(() {
-      // print("Количество чанков: ${sortedChunks.length}");
-      // print("Длина base64 строки: ${fullBase64.length}");
-
       imageBytes = images;
     });
   }
@@ -183,7 +166,13 @@ class _HomePageState extends State<HomePage> {
                       itemBuilder: (context, index) {
                         return Padding(
                           padding: EdgeInsets.all(8.r),
-                          child: Image.memory(imageBytes[index], fit: BoxFit.cover,),
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => PainterPage(imageBytes: imageBytes[index])));
+                            },
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8.r),
+                              child: Image.memory(imageBytes[index], fit: BoxFit.cover,))),
                         );
                       },
                   )
