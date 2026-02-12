@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -78,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
           message = "Слишком много попыток. Попробуйте позже";
           break;
         default:
-          message = e.message ?? "Ошибка";
+          message = "Ошибка";
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -116,10 +115,12 @@ class _LoginPageState extends State<LoginPage> {
               width: 380.r,
             ),
           ),
-          Center(
-            child: Padding(
-              padding: EdgeInsets.only(left: 20.r, right: 20.r, bottom: MediaQuery.of(context).viewInsets.bottom,),
-              child: Form(
+          AnimatedPadding(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOutExpo,
+            padding: EdgeInsets.only(left: 20.r, right: 20.r, bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: Center(
+            child: Form(
                 key: formKey,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -228,7 +229,9 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ],
                 ),
-              )))
+              ),
+            ),
+          )
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

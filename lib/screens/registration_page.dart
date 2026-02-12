@@ -63,7 +63,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
         case "weak-password":
           message = "Слабый пароль";
           break;
-        default: message = e.message ?? "Ошибка";
+        default: message = "Ошибка";
       }
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -115,230 +115,233 @@ class _RegistrationPageState extends State<RegistrationPage> {
               width: 380,
             ),
           ),
-          Center(
-            child: Padding(
-              padding: EdgeInsets.only(left: 20.r, right: 20.r, bottom: MediaQuery.of(context).viewInsets.bottom,),
+          AnimatedPadding(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOutExpo,
+            padding: EdgeInsets.only(left: 20.r, right: 20.r, bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: Center(
               child: Form(
-                key: formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Регистрация", style: TextStyle(color: Colors.white, fontSize: 26.r, fontFamily: "Press Start 2P"),),
-                    SizedBox(height: 10.r),
-                    Container(
-                      height: 85,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                          colors: [
-                            Colors.cyan.withValues(alpha: 0.25),
-                            Colors.transparent,
-                            Colors.cyan.withValues(alpha: 0.25),
-                          ],
-                          stops: const [0.0, 0.5, 1.0],
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color.fromARGB(255, 0, 0, 0),
-                            blurRadius: 5,
+                  key: formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Регистрация", style: TextStyle(color: Colors.white, fontSize: 26.r, fontFamily: "Press Start 2P"),),
+                      SizedBox(height: 10.r),
+                      Container(
+                        height: 85,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                            colors: [
+                              Colors.cyan.withValues(alpha: 0.25),
+                              Colors.transparent,
+                              Colors.cyan.withValues(alpha: 0.25),
+                            ],
+                            stops: const [0.0, 0.5, 1.0],
                           ),
-                        ],
-                        // color: Colors.transparent,
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 20.r, right: 20.r, bottom: 10.r),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(top: 5.r),
-                              child: Text("Имя", style: TextStyle(color: Colors.blueGrey[300], fontSize: 12.r),),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color.fromARGB(255, 0, 0, 0),
+                              blurRadius: 5,
                             ),
-                            TextField(
-                              onChanged: (_){
-                                checkFieldsFilled();
-                              },
-                              controller: nameController,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18.r,
+                          ],
+                          // color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 20.r, right: 20.r, bottom: 10.r),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(top: 5.r),
+                                child: Text("Имя", style: TextStyle(color: Colors.blueGrey[300], fontSize: 12.r),),
                               ),
-                              decoration: InputDecoration(
-                                hint: Text("Введите ваше имя", style: TextStyle(color: Colors.blueGrey[300]),),
-                                focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.blueGrey, width: 1.r),
+                              TextField(
+                                onChanged: (_){
+                                  checkFieldsFilled();
+                                },
+                                controller: nameController,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18.r,
+                                ),
+                                decoration: InputDecoration(
+                                  hint: Text("Введите ваше имя", style: TextStyle(color: Colors.blueGrey[300]),),
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.blueGrey, width: 1.r),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    Container(
-                      height: 85,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                          colors: [
-                            Colors.cyan.withValues(alpha: 0.25),
-                            Colors.transparent,
-                            Colors.cyan.withValues(alpha: 0.25),
-                          ],
-                          stops: const [0.0, 0.5, 1.0],
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color.fromARGB(255, 0, 0, 0),
-                            blurRadius: 5,
+                            ],
                           ),
-                        ],
-                        // color: Colors.transparent,
-                        borderRadius: BorderRadius.circular(8.r),
+                        ),
                       ),
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 20.r, right: 20.r, bottom: 10.r),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(top: 5.r),
-                              child: Text("e-mail", style: TextStyle(color: Colors.blueGrey[300], fontSize: 12.r),),
+                      SizedBox(height: 16),
+                      Container(
+                        height: 85,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                            colors: [
+                              Colors.cyan.withValues(alpha: 0.25),
+                              Colors.transparent,
+                              Colors.cyan.withValues(alpha: 0.25),
+                            ],
+                            stops: const [0.0, 0.5, 1.0],
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color.fromARGB(255, 0, 0, 0),
+                              blurRadius: 5,
                             ),
-                            TextField(
-                              controller: emailController,
-                              onChanged: (_){
-                                checkFieldsFilled();
-                              },
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18.r,
+                          ],
+                          // color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 20.r, right: 20.r, bottom: 10.r),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(top: 5.r),
+                                child: Text("e-mail", style: TextStyle(color: Colors.blueGrey[300], fontSize: 12.r),),
                               ),
-                              decoration: InputDecoration(
-                                hint: Text("Ваша электронная почта", style: TextStyle(color: Colors.blueGrey[300]),),
-                                focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.blueGrey, width: 1),
+                              TextField(
+                                controller: emailController,
+                                onChanged: (_){
+                                  checkFieldsFilled();
+                                },
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18.r,
+                                ),
+                                decoration: InputDecoration(
+                                  hint: Text("Ваша электронная почта", style: TextStyle(color: Colors.blueGrey[300]),),
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.blueGrey, width: 1),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 16.r),
-                    Container(
-                      height: 85.r,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                          colors: [
-                            Colors.cyan.withValues(alpha: 0.25),
-                            Colors.transparent,
-                            Colors.cyan.withValues(alpha: 0.25),
-                          ],
-                          stops: const [0.0, 0.5, 1.0],
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color.fromARGB(255, 0, 0, 0),
-                            blurRadius: 5,
+                            ],
                           ),
-                        ],
-                        // color: Colors.transparent,
-                        borderRadius: BorderRadius.circular(8.r),
+                        ),
                       ),
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 20.r, right: 20.r, bottom: 10.r),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(top: 5.r),
-                              child: Text("Пароль", style: TextStyle(color: Colors.blueGrey[300], fontSize: 12.r),),
+                      SizedBox(height: 16.r),
+                      Container(
+                        height: 85.r,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                            colors: [
+                              Colors.cyan.withValues(alpha: 0.25),
+                              Colors.transparent,
+                              Colors.cyan.withValues(alpha: 0.25),
+                            ],
+                            stops: const [0.0, 0.5, 1.0],
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color.fromARGB(255, 0, 0, 0),
+                              blurRadius: 5,
                             ),
-                            TextField(
-                              controller: passwordController,
-                              onChanged: (_){
-                                checkFieldsFilled();
-                              },
-                              obscureText: true,
-                              obscuringCharacter: '*',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18.r,
+                          ],
+                          // color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 20.r, right: 20.r, bottom: 10.r),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(top: 5.r),
+                                child: Text("Пароль", style: TextStyle(color: Colors.blueGrey[300], fontSize: 12.r),),
                               ),
-                              decoration: InputDecoration(
-                                hint: Text("8-16 символов", style: TextStyle(color: Colors.blueGrey[300], fontSize: 14.r),),
-                                focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.blueGrey, width: 1.r),
+                              TextField(
+                                controller: passwordController,
+                                onChanged: (_){
+                                  checkFieldsFilled();
+                                },
+                                obscureText: true,
+                                obscuringCharacter: '*',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18.r,
+                                ),
+                                decoration: InputDecoration(
+                                  hint: Text("8-16 символов", style: TextStyle(color: Colors.blueGrey[300], fontSize: 14.r),),
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.blueGrey, width: 1.r),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 16.r),
-                    Container(
-                      height: 85.r,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                          colors: [
-                            Colors.cyan.withValues(alpha: 0.25),
-                            Colors.transparent,
-                            Colors.cyan.withValues(alpha: 0.25),
-                          ],
-                          stops: const [0.0, 0.5, 1.0],
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color.fromARGB(255, 0, 0, 0),
-                            blurRadius: 5,
+                            ],
                           ),
-                        ],
-                        borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 20.r, right: 20.r, bottom: 10.r),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(top: 5.r),
-                              child: Text("Подтверждение пароля", style: TextStyle(color: Colors.blueGrey[300], fontSize: 12.r),),
+                      SizedBox(height: 16.r),
+                      Container(
+                        height: 85.r,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                            colors: [
+                              Colors.cyan.withValues(alpha: 0.25),
+                              Colors.transparent,
+                              Colors.cyan.withValues(alpha: 0.25),
+                            ],
+                            stops: const [0.0, 0.5, 1.0],
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color.fromARGB(255, 0, 0, 0),
+                              blurRadius: 5,
                             ),
-                            TextField(
-                              controller: passwordConfirmController,
-                              onChanged: (_){
-                                checkFieldsFilled();
-                              },
-                              obscureText: true,
-                              obscuringCharacter: '*',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
+                          ],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 20.r, right: 20.r, bottom: 10.r),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(top: 5.r),
+                                child: Text("Подтверждение пароля", style: TextStyle(color: Colors.blueGrey[300], fontSize: 12.r),),
                               ),
-                              decoration: InputDecoration(
-                                hint: Text("8-16 символов", style: TextStyle(color: Colors.blueGrey[300]),),
-                                focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.blueGrey, width: 1),
+                              TextField(
+                                controller: passwordConfirmController,
+                                onChanged: (_){
+                                  checkFieldsFilled();
+                                },
+                                obscureText: true,
+                                obscuringCharacter: '*',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                ),
+                                decoration: InputDecoration(
+                                  hint: Text("8-16 символов", style: TextStyle(color: Colors.blueGrey[300]),),
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.blueGrey, width: 1),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ))),  
+                    ],
+                  ),
+                )),
+          ),  
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

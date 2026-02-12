@@ -27,7 +27,7 @@ class NotificationService {
   Future<void> showNotification() async {
     await plugin.show(
       id: 0,
-      title: "Сохранено",
+      title: "Photo Editor",
       body: "Изображение сохранено",
       notificationDetails: const NotificationDetails(),
     );
