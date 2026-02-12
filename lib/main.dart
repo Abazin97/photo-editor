@@ -4,6 +4,7 @@ import 'package:test_task/bloc/auth_notifier.dart';
 import 'package:test_task/screens/splash_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:test_task/services/auth_service.dart';
+import 'package:test_task/services/network_service.dart';
 import 'package:test_task/services/notification_service.dart';
 import 'firebase_options.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -14,6 +15,7 @@ void main() async{
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  NetworkService().init();
   NotificationService().init();
   runApp(
     BlocProvider(create: (_) => AuthNotifier(AuthService()),

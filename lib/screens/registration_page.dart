@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:test_task/bloc/auth_notifier.dart';
 
 
@@ -13,6 +16,7 @@ class RegistrationPage extends StatefulWidget {
 }
 
 class _RegistrationPageState extends State<RegistrationPage> {
+  late final StreamSubscription _subscription;
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -21,11 +25,25 @@ class _RegistrationPageState extends State<RegistrationPage> {
   bool fieldsFilled = false;
 
   @override
+  void initState() {
+    super.initState();
+    _subscription = InternetConnectionChecker.createInstance().onStatusChange.listen((status) {
+      if (status == InternetConnectionStatus.disconnected) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Отсутствует подключение к интернету", style: TextStyle(color: Colors.white),), backgroundColor: Colors.red,)
+        );
+      }
+    });
+  }
+
+  @override
   void dispose() {
     nameController.dispose();
     emailController.dispose();
     passwordController.dispose();
     passwordConfirmController.dispose();
+    _subscription.cancel();
     super.dispose();
   }
 
@@ -75,6 +93,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           Positioned.fill(
@@ -98,14 +117,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
           ),
           Center(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.only(left: 20.r, right: 20.r, bottom: MediaQuery.of(context).viewInsets.bottom,),
               child: Form(
                 key: formKey,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Регистрация", style: TextStyle(color: Colors.white, fontSize: 26),),
+                    Text("Регистрация", style: TextStyle(color: Colors.white, fontSize: 26.r),),
                     SizedBox(height: 10.r),
                     Container(
                       height: 85,
@@ -136,7 +155,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           children: [
                             Padding(
                               padding: EdgeInsets.only(top: 5.r),
-                              child: Text("Имя", style: TextStyle(color: Colors.blueGrey[300], fontSize: 14.r),),
+                              child: Text("Имя", style: TextStyle(color: Colors.blueGrey[300], fontSize: 12.r),),
                             ),
                             TextField(
                               onChanged: (_){
@@ -188,7 +207,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           children: [
                             Padding(
                               padding: EdgeInsets.only(top: 5.r),
-                              child: Text("e-mail", style: TextStyle(color: Colors.blueGrey[300], fontSize: 14.r),),
+                              child: Text("e-mail", style: TextStyle(color: Colors.blueGrey[300], fontSize: 12.r),),
                             ),
                             TextField(
                               controller: emailController,
@@ -240,7 +259,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           children: [
                             Padding(
                               padding: EdgeInsets.only(top: 5.r),
-                              child: Text("Пароль", style: TextStyle(color: Colors.blueGrey[300], fontSize: 14.r),),
+                              child: Text("Пароль", style: TextStyle(color: Colors.blueGrey[300], fontSize: 12.r),),
                             ),
                             TextField(
                               controller: passwordController,
@@ -293,7 +312,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           children: [
                             Padding(
                               padding: EdgeInsets.only(top: 5.r),
-                              child: Text("Подтверждение пароля", style: TextStyle(color: Colors.blueGrey[300], fontSize: 14.r),),
+                              child: Text("Подтверждение пароля", style: TextStyle(color: Colors.blueGrey[300], fontSize: 12.r),),
                             ),
                             TextField(
                               controller: passwordConfirmController,

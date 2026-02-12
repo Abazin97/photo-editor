@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -8,6 +9,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test_task/screens/home_page.dart';
@@ -23,6 +25,7 @@ class PainterPage extends StatefulWidget {
 }
 
 class _PainterPageState extends State<PainterPage> {
+  late final StreamSubscription _subscription;
 
   List<DrawnPoint?> _points = [];
   final GlobalKey repaintKey = GlobalKey();
@@ -37,6 +40,14 @@ class _PainterPageState extends State<PainterPage> {
     if (widget.imageBytes != null) {
       selectedImageBytes = widget.imageBytes;
     }
+    _subscription = InternetConnectionChecker.createInstance().onStatusChange.listen((status) {
+      if (status == InternetConnectionStatus.disconnected) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Отсутствует подключение к интернету", style: TextStyle(color: Colors.white),), backgroundColor: Colors.red,)
+        );
+      }
+    });
     super.initState();
   }
 
@@ -112,45 +123,6 @@ class _PainterPageState extends State<PainterPage> {
         });
       }
     }
-    // if (selectedImage == null) return;
-
-    // await Permission.storage.request();
-    // await Permission.photos.request();
-
-    // final bytes = await selectedImage!.readAsBytes();
-    // final imageStr = base64Encode(bytes);
-    // await ImageGallerySaver.saveImage(bytes);
-
-    // final imageChunks = splitString(imageStr, 10000);
-
-    // final doc = FirebaseFirestore.instance.collection("images").doc();
-    // final docID = doc.id;
-    // await doc.set({
-    //   "count": imageChunks.length,
-    //   "createdAt": FieldValue.serverTimestamp(),
-    // });
-    // for (int i = 0; i < imageChunks.length; i++) {
-    //   await doc
-    //       .collection("chunks")
-    //       .doc(i.toString())
-    //       .set({"data": imageChunks[i]});
-    // }
-
-
-    // final prefs = await SharedPreferences.getInstance();
-    // final idList = prefs.getStringList("image_doc_ids") ?? [];
-    // idList.add(docID);
-    // await prefs.setStringList("image_doc_ids", idList);
-    
-    // if (!mounted) return;
-    // setState(() {
-    //   isLoading = false;
-    // });
-    // NotificationService().showNotification();
-    // ScaffoldMessenger.of(context).showSnackBar(
-    //   SnackBar(content: Text("Изображение успешно сохранено"))
-    // );
-    // popPage();
   }
 
   void popPage() {
@@ -173,6 +145,12 @@ class _PainterPageState extends State<PainterPage> {
     setState(() {
       _points.clear();
     });
+  }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
   }
 
   @override

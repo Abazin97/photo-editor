@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test_task/bloc/auth_notifier.dart';
 import 'package:test_task/screens/painter_page.dart';
@@ -16,18 +18,31 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  late final StreamSubscription _subscription;
+  
   List<Uint8List> imageBytes = [];
+  bool isLoading = false;
 
   @override
   initState() {
     super.initState();
     getImage();
+    _subscription = InternetConnectionChecker.createInstance().onStatusChange.listen((status) {
+      if (status == InternetConnectionStatus.disconnected) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Отсутствует подключение к интернету", style: TextStyle(color: Colors.white),), backgroundColor: Colors.red,)
+        );
+      }
+    });
   }
 
   Future<void> getImage() async {
+    setState(() {
+      isLoading = true;
+    });
     final prefs = await SharedPreferences.getInstance();
     final idList = prefs.getStringList("image_doc_ids") ?? [];
-    if (idList.isEmpty) return;
 
     List<Uint8List> images = [];
 
@@ -49,6 +64,7 @@ class _HomePageState extends State<HomePage> {
     if (!mounted) return;
     setState(() {
       imageBytes = images;
+      isLoading = false;
     });
   }
 
@@ -59,6 +75,12 @@ class _HomePageState extends State<HomePage> {
 
   void popPage() {
     Navigator.pop(context);
+  }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
   }
 
   @override
@@ -125,6 +147,19 @@ class _HomePageState extends State<HomePage> {
                                 },
                               ),
                             ),
+                            imageBytes.isEmpty ? Container() : Positioned(
+                              right: 8.r,
+                              child: GestureDetector(
+                                child: Image.asset(
+                                  "assets/Paint Roller.png",
+                                  width: 40.r,
+                                  height: 40.r,
+                                ),
+                                onTap: () {
+                                  
+                                },
+                              ),
+                            ),
                           ],
                         )
                       ),
@@ -157,26 +192,28 @@ class _HomePageState extends State<HomePage> {
                     width: 380.r,
                   ),
                 ),
-                Positioned.fill(child: imageBytes.isEmpty ? 
-                  Center(child: CircularProgressIndicator(),)
-                  : GridView.builder(
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2
-                      ),
-                      itemCount: imageBytes.length, 
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: EdgeInsets.all(8.r),
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => PainterPage(imageBytes: imageBytes[index])));
-                            },
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8.r),
-                              child: Image.memory(imageBytes[index], fit: BoxFit.cover,))),
-                        );
-                      },
-                  )
+                Positioned.fill(child: isLoading
+                  ? Center(child: CircularProgressIndicator(),)
+                  : imageBytes.isEmpty
+                    ? Container()
+                    : GridView.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2
+                        ),
+                        itemCount: imageBytes.length, 
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: EdgeInsets.all(8.r),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => PainterPage(imageBytes: imageBytes[index])));
+                              },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8.r),
+                                child: Image.memory(imageBytes[index], fit: BoxFit.cover,))),
+                          );
+                        },
+                    )
                 )
               ],
             ),
