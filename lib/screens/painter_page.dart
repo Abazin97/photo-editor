@@ -21,8 +21,11 @@ class PainterPage extends StatefulWidget {
 
 class _PainterPageState extends State<PainterPage> {
 
+  List<DrawnPoint?> _points = [];
   Uint8List? selectedImageBytes;
   File? selectedImage;
+  Color selectedColor = Colors.white;
+  double strokeWidth = 4.0;
   bool isLoading = false;
 
   @override
@@ -88,6 +91,10 @@ class _PainterPageState extends State<PainterPage> {
     popPage();
   }
 
+  void popPage() {
+    Navigator.push(context, MaterialPageRoute(builder: (_) => HomePage()),);
+  }
+
   List<String> splitString(String str, int chunkSize) {
     List<String> chunks = [];
     for (var i = 0; i < str.length; i += chunkSize) {
@@ -97,34 +104,13 @@ class _PainterPageState extends State<PainterPage> {
   }
 
   void showColorPicker() {
-      // showDialog(
-      //   context: context,
-      //   builder: (context) {
-      //     return AlertDialog(
-      //       title: Text('Выберите цвет'),
-      //       content: SingleChildScrollView(
-      //         child: BlockPicker(
-      //           pickerColor: Colors.black,
-      //           onColorChanged: (color) {
-      //             
-      //           },
-      //         ),
-      //       ),
-      //       actions: [
-      //         TextButton(
-      //           onPressed: () {
-      //             Navigator.of(context).pop();
-      //           },
-      //           child: Text('Закрыть'),
-      //         ),
-      //       ],
-      //     );
-      //   },
-      // );
+      
   }
 
-  void popPage() {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => HomePage()),);
+  void clearCanvas() {
+    setState(() {
+      _points.clear();
+    });
   }
 
   @override
@@ -243,6 +229,33 @@ class _PainterPageState extends State<PainterPage> {
                       ? Image.file(selectedImage!) 
                       : Container(),
                 ),
+                Positioned.fill(child: GestureDetector(
+                  onPanStart: (details) {
+                    setState(() {
+                      _points.add(DrawnPoint(details.localPosition, Paint()
+                        ..color = selectedColor
+                        ..strokeWidth = strokeWidth
+                        ..strokeCap = StrokeCap.round
+                      ));
+                    });
+                  },
+                  onPanUpdate: (details) {
+                    setState(() {
+                      _points.add(DrawnPoint(details.localPosition, Paint()
+                        ..color = selectedColor
+                        ..strokeWidth = strokeWidth
+                        ..strokeCap = StrokeCap.round
+                      ));
+                    });
+                  },
+                  onPanEnd: (details) {
+                    _points.add(null);
+                  },
+                  child: CustomPaint(
+                    painter: Painter(_points),
+                    size: Size.infinite,
+                  ),
+                ),),
                 Positioned(child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -256,7 +269,7 @@ class _PainterPageState extends State<PainterPage> {
 
                     }, icon: Image.asset("assets/Frame 11.png"),),
                     IconButton(onPressed: (){
-                      NotificationService().showNotification();
+                      clearCanvas();
                     }, icon: Image.asset("assets/Frame 10.png"),),
                     IconButton(onPressed: (){
                       showColorPicker();
@@ -276,5 +289,36 @@ class _PainterPageState extends State<PainterPage> {
         ],
       ),
     );
+  }
+}
+
+class DrawnPoint {
+  final Offset offset;
+  final Paint paint;
+
+  DrawnPoint(this.offset, this.paint);
+}
+
+class Painter extends CustomPainter {
+  final List<DrawnPoint?> points;
+
+  Painter(this.points);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    for (int i = 0; i < points.length - 1; i++) {
+      if (points[i] != null && points[i + 1] != null) {
+        canvas.drawLine(
+          points[i]!.offset,
+          points[i + 1]!.offset,
+          points[i]!.paint,
+        );
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
   }
 }
