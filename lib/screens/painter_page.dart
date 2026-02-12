@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui';
+import 'dart:ui' as ui;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
@@ -18,7 +19,8 @@ import 'package:uuid/uuid.dart';
 
 class PainterPage extends StatefulWidget {
   final Uint8List? imageBytes;
-  const PainterPage({super.key, this.imageBytes});
+  final bool emptyData;
+  const PainterPage({super.key, this.imageBytes, required this.emptyData});
 
   @override
   State<PainterPage> createState() => _PainterPageState();
@@ -32,6 +34,7 @@ class _PainterPageState extends State<PainterPage> {
   Uint8List? selectedImageBytes;
   File? selectedImage;
   Color selectedColor = Colors.white;
+  ui.Image? paletteImage;
   double strokeWidth = 4.0;
   bool isLoading = false;
 
@@ -48,6 +51,7 @@ class _PainterPageState extends State<PainterPage> {
         );
       }
     });
+    loadPalette();
     super.initState();
   }
 
@@ -105,9 +109,6 @@ class _PainterPageState extends State<PainterPage> {
         isLoading = false;
       });
       NotificationService().showNotification();
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   SnackBar(content: Text("Изображение успешно сохранено"))
-      // );
       popPage();
     }catch (e) {
       setState(() {
@@ -138,7 +139,47 @@ class _PainterPageState extends State<PainterPage> {
   }
 
   void showColorPicker() {
-      
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Выберите цвет"),
+          content: GestureDetector(
+            onTapDown: (details) async {
+              final box = context.findRenderObject() as RenderBox;
+              final localPos = box.globalToLocal(details.globalPosition);
+
+              final color = await getColorFromImage(localPos, box.size);
+              setState(() => selectedColor = color);
+
+              Navigator.pop(context);
+            },
+            child: Image.asset("assets/Panel Contents.png"),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<Color> getColorFromImage(Offset pos, Size size) async {
+    final byteData = await paletteImage!.toByteData();
+    final x = (pos.dx / size.width * paletteImage!.width).toInt();
+    final y = (pos.dy / size.height * paletteImage!.height).toInt();
+
+    final pixelIndex = (y * paletteImage!.width + x) * 4;
+    final r = byteData!.getUint8(pixelIndex);
+    final g = byteData.getUint8(pixelIndex + 1);
+    final b = byteData.getUint8(pixelIndex + 2);
+
+    return Color.fromARGB(255, r, g, b);
+  }
+
+  Future<void> loadPalette() async {
+    final data = await rootBundle.load("assets/Panel Contents.png");
+    final bytes = data.buffer.asUint8List();
+    final codec = await ui.instantiateImageCodec(bytes);
+    final frame = await codec.getNextFrame();
+    paletteImage = frame.image;
   }
 
   void clearCanvas() {
@@ -196,11 +237,11 @@ class _PainterPageState extends State<PainterPage> {
                           children: [
                             Center(
                               child: Text(
-                                "Новое изображение",
+                                widget.emptyData ? "Новое изображение" : "Редактирование",
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 20.r,
+                                  fontSize: 18.r,
                                 ),
                               ),
                             ),
@@ -269,9 +310,15 @@ class _PainterPageState extends State<PainterPage> {
                       Positioned.fill(
                         child: selectedImageBytes != null 
                           ? Image.memory(selectedImageBytes!, fit: BoxFit.contain)
-                          : selectedImage != null 
+                          : selectedImage != null
                             ? Image.file(selectedImage!)
-                            : Container(),
+                            : Padding(
+                              padding:  EdgeInsets.only(left: 20.r, right: 20.r, top: 60.r, bottom: 60.r),
+                              child: Container(decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12.r),
+                              ),),
+                            ),
                       ),
 
                       Positioned.fill(

@@ -206,7 +206,7 @@ class _HomePageState extends State<HomePage> {
                             padding: EdgeInsets.all(8.r),
                             child: GestureDetector(
                               onTap: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => PainterPage(imageBytes: imageBytes[index])));
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => PainterPage(emptyData: false, imageBytes: imageBytes[index])));
                               },
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(8.r),
@@ -234,7 +234,7 @@ class _HomePageState extends State<HomePage> {
               ), 
             ),
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const PainterPage()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => PainterPage(emptyData: imageBytes.isNotEmpty)));
             },
             child: Text("Создать", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
           ),
