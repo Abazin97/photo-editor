@@ -24,7 +24,6 @@ class _HomePageState extends State<HomePage> {
     getImage();
   }
 
-
   Future<void> getImage() async {
     final prefs = await SharedPreferences.getInstance();
     final idList = prefs.getStringList("image_doc_ids") ?? [];

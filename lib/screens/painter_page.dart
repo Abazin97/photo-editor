@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
@@ -10,6 +12,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test_task/screens/home_page.dart';
 import 'package:test_task/services/notification_service.dart';
+import 'package:uuid/uuid.dart';
 
 class PainterPage extends StatefulWidget {
   final Uint8List? imageBytes;
@@ -22,6 +25,7 @@ class PainterPage extends StatefulWidget {
 class _PainterPageState extends State<PainterPage> {
 
   List<DrawnPoint?> _points = [];
+  final GlobalKey repaintKey = GlobalKey();
   Uint8List? selectedImageBytes;
   File? selectedImage;
   Color selectedColor = Colors.white;
@@ -50,45 +54,103 @@ class _PainterPageState extends State<PainterPage> {
     setState(() {
       isLoading = true;
     });
-    if (selectedImage == null) return;
 
-    await Permission.storage.request();
-    await Permission.photos.request();
+    try {
+      final uuid = Uuid();
+      String imageId = uuid.v4();
+      RenderRepaintBoundary boundary = repaintKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+      var image = await boundary.toImage();
+      ByteData? byteData = await image.toByteData(format: ImageByteFormat.png);
+      Uint8List pngBytes = byteData!.buffer.asUint8List();
 
-    final bytes = await selectedImage!.readAsBytes();
-    final imageStr = base64Encode(bytes);
-    await ImageGallerySaver.saveImage(bytes);
+      await Permission.storage.request();
+      await Permission.photos.request();
+      await ImageGallerySaver.saveImage(pngBytes);
 
-    final imageChunks = splitString(imageStr, 10000);
+      final imageStr = base64Encode(pngBytes);
+      final imageChunks = splitString(imageStr, 10000);
 
-    final doc = FirebaseFirestore.instance.collection("images").doc();
-    final docID = doc.id;
-    await doc.set({
-      "count": imageChunks.length,
-      "createdAt": FieldValue.serverTimestamp(),
-    });
-    for (int i = 0; i < imageChunks.length; i++) {
+      final doc = FirebaseFirestore.instance.collection("images").doc();
+      final docID = doc.id;
+      await doc.set({
+        "count": imageChunks.length,
+        "id": imageId,
+        "createdAt": FieldValue.serverTimestamp(),
+      });
+
+      for (int i = 0; i < imageChunks.length; i++) {
       await doc
           .collection("chunks")
           .doc(i.toString())
           .set({"data": imageChunks[i]});
+      }
+      final prefs = await SharedPreferences.getInstance();
+      final idList = prefs.getStringList("image_doc_ids") ?? [];
+      idList.add(docID);
+      await prefs.setStringList("image_doc_ids", idList);
+
+      if (!mounted) return;
+      setState(() {
+        isLoading = false;
+      });
+      NotificationService().showNotification();
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(content: Text("Изображение успешно сохранено"))
+      // );
+      popPage();
+    }catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Ошибка при сохранении изображения"))
+      );
+
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
+    // if (selectedImage == null) return;
+
+    // await Permission.storage.request();
+    // await Permission.photos.request();
+
+    // final bytes = await selectedImage!.readAsBytes();
+    // final imageStr = base64Encode(bytes);
+    // await ImageGallerySaver.saveImage(bytes);
+
+    // final imageChunks = splitString(imageStr, 10000);
+
+    // final doc = FirebaseFirestore.instance.collection("images").doc();
+    // final docID = doc.id;
+    // await doc.set({
+    //   "count": imageChunks.length,
+    //   "createdAt": FieldValue.serverTimestamp(),
+    // });
+    // for (int i = 0; i < imageChunks.length; i++) {
+    //   await doc
+    //       .collection("chunks")
+    //       .doc(i.toString())
+    //       .set({"data": imageChunks[i]});
+    // }
 
 
-    final prefs = await SharedPreferences.getInstance();
-    final idList = prefs.getStringList("image_doc_ids") ?? [];
-    idList.add(docID);
-    await prefs.setStringList("image_doc_ids", idList);
+    // final prefs = await SharedPreferences.getInstance();
+    // final idList = prefs.getStringList("image_doc_ids") ?? [];
+    // idList.add(docID);
+    // await prefs.setStringList("image_doc_ids", idList);
     
-    if (!mounted) return;
-    setState(() {
-      isLoading = false;
-    });
-    NotificationService().showNotification();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Изображение успешно сохранено"))
-    );
-    popPage();
+    // if (!mounted) return;
+    // setState(() {
+    //   isLoading = false;
+    // });
+    // NotificationService().showNotification();
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   SnackBar(content: Text("Изображение успешно сохранено"))
+    // );
+    // popPage();
   }
 
   void popPage() {
@@ -222,40 +284,49 @@ class _PainterPageState extends State<PainterPage> {
                     width: 380.r,
                   ),
                 ),
-                Positioned.fill(
-                  child: selectedImageBytes != null 
-                    ? Image.memory(selectedImageBytes!, fit: BoxFit.contain,) 
-                    : selectedImage != null 
-                      ? Image.file(selectedImage!) 
-                      : Container(),
-                ),
-                Positioned.fill(child: GestureDetector(
-                  onPanStart: (details) {
-                    setState(() {
-                      _points.add(DrawnPoint(details.localPosition, Paint()
-                        ..color = selectedColor
-                        ..strokeWidth = strokeWidth
-                        ..strokeCap = StrokeCap.round
-                      ));
-                    });
-                  },
-                  onPanUpdate: (details) {
-                    setState(() {
-                      _points.add(DrawnPoint(details.localPosition, Paint()
-                        ..color = selectedColor
-                        ..strokeWidth = strokeWidth
-                        ..strokeCap = StrokeCap.round
-                      ));
-                    });
-                  },
-                  onPanEnd: (details) {
-                    _points.add(null);
-                  },
-                  child: CustomPaint(
-                    painter: Painter(_points),
-                    size: Size.infinite,
+                RepaintBoundary(
+                  key: repaintKey,
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: selectedImageBytes != null 
+                          ? Image.memory(selectedImageBytes!, fit: BoxFit.contain)
+                          : selectedImage != null 
+                            ? Image.file(selectedImage!)
+                            : Container(),
+                      ),
+
+                      Positioned.fill(
+                        child: GestureDetector(
+                          onPanStart: (details) {
+                            setState(() {
+                              _points.add(DrawnPoint(details.localPosition, Paint()
+                                ..color = selectedColor
+                                ..strokeWidth = strokeWidth
+                                ..strokeCap = StrokeCap.round
+                              ));
+                            });
+                          },
+                          onPanUpdate: (details) {
+                            setState(() {
+                              _points.add(DrawnPoint(details.localPosition, Paint()
+                                ..color = selectedColor
+                                ..strokeWidth = strokeWidth
+                                ..strokeCap = StrokeCap.round
+                              ));
+                            });
+                          },
+                          onPanEnd: (_) => _points.add(null),
+                          child: CustomPaint(
+                            painter: Painter(_points),
+                            size: Size.infinite,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),),
+                ),
+
                 Positioned(child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [

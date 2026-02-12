@@ -1,9 +1,6 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationService {
-  // static final NotificationService _instance = NotificationService._();
-  // factory NotificationService() => _instance;
-  // NotificationService._();
 
   final FlutterLocalNotificationsPlugin plugin = FlutterLocalNotificationsPlugin();
 
@@ -27,19 +24,7 @@ class NotificationService {
     );
   }
 
-  // Future<void> requestPermission() async {
-  //   await plugin
-  //       .resolvePlatformSpecificImplementation<
-  //           IOSFlutterLocalNotificationsPlugin>()
-  //       ?.requestPermissions(
-  //         alert: true,
-  //         badge: true,
-  //         sound: true,
-  //       );
-  // }
-
   Future<void> showNotification() async {
-    print("pressed");
     await plugin.show(
       id: 0,
       title: "Сохранено",
