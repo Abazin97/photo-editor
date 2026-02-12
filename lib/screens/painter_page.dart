@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:ui';
 import 'dart:ui' as ui;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -37,6 +38,7 @@ class _PainterPageState extends State<PainterPage> {
   ui.Image? paletteImage;
   double strokeWidth = 4.0;
   bool isLoading = false;
+  bool isDrawingMode = false;
 
   @override
   initState() {
@@ -66,6 +68,7 @@ class _PainterPageState extends State<PainterPage> {
   }
 
   Future<void> saveImage() async {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
     setState(() {
       isLoading = true;
     });
@@ -90,6 +93,7 @@ class _PainterPageState extends State<PainterPage> {
       await doc.set({
         "count": imageChunks.length,
         "id": imageId,
+        "ownerId": uid,
         "createdAt": FieldValue.serverTimestamp(),
       });
 
@@ -322,29 +326,32 @@ class _PainterPageState extends State<PainterPage> {
                       ),
 
                       Positioned.fill(
-                        child: GestureDetector(
-                          onPanStart: (details) {
-                            setState(() {
-                              _points.add(DrawnPoint(details.localPosition, Paint()
-                                ..color = selectedColor
-                                ..strokeWidth = strokeWidth
-                                ..strokeCap = StrokeCap.round
-                              ));
-                            });
-                          },
-                          onPanUpdate: (details) {
-                            setState(() {
-                              _points.add(DrawnPoint(details.localPosition, Paint()
-                                ..color = selectedColor
-                                ..strokeWidth = strokeWidth
-                                ..strokeCap = StrokeCap.round
-                              ));
-                            });
-                          },
-                          onPanEnd: (_) => _points.add(null),
-                          child: CustomPaint(
-                            painter: Painter(_points),
-                            size: Size.infinite,
+                        child: IgnorePointer(
+                          ignoring: !isDrawingMode,
+                          child: GestureDetector(
+                            onPanStart: (details) {
+                              setState(() {
+                                _points.add(DrawnPoint(details.localPosition, Paint()
+                                  ..color = selectedColor
+                                  ..strokeWidth = strokeWidth
+                                  ..strokeCap = StrokeCap.round
+                                ));
+                              });
+                            },
+                            onPanUpdate: (details) {
+                              setState(() {
+                                _points.add(DrawnPoint(details.localPosition, Paint()
+                                  ..color = selectedColor
+                                  ..strokeWidth = strokeWidth
+                                  ..strokeCap = StrokeCap.round
+                                ));
+                              });
+                            },
+                            onPanEnd: (_) => _points.add(null),
+                            child: CustomPaint(
+                              painter: Painter(_points),
+                              size: Size.infinite,
+                            ),
                           ),
                         ),
                       ),
@@ -362,14 +369,16 @@ class _PainterPageState extends State<PainterPage> {
                       pickImage();
                     }, icon: Image.asset("assets/Frame 12.png"),),
                     IconButton(onPressed: (){
-
-                    }, icon: Image.asset("assets/Frame 11.png"),),
+                      setState(() {
+                        isDrawingMode = !isDrawingMode;
+                      });
+                    }, icon: Image.asset("assets/Frame 11.png", color: isDrawingMode ? Colors.green : Colors.white,),),
                     IconButton(onPressed: (){
                       clearCanvas();
                     }, icon: Image.asset("assets/Frame 10.png"),),
                     IconButton(onPressed: (){
                       showColorPicker();
-                    }, icon: Image.asset("assets/Frame 9.png"),)
+                    }, icon: Image.asset("assets/Frame 9.png",),)
                   ],
                 )),
                 Positioned.fill(child:  isLoading ? Container(

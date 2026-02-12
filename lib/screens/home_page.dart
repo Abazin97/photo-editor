@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test_task/bloc/auth_notifier.dart';
 import 'package:test_task/screens/painter_page.dart';
 
@@ -38,36 +38,41 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> getImage() async {
-    setState(() {
-      isLoading = true;
-    });
-    final prefs = await SharedPreferences.getInstance();
-    final idList = prefs.getStringList("image_doc_ids") ?? [];
+    setState(() => isLoading = true);
 
-    List<Uint8List> images = [];
+    try {
+      final uid = FirebaseAuth.instance.currentUser!.uid;
 
-    for (String docID in idList) {
-      final docRef = FirebaseFirestore.instance.collection("images").doc(docID);
-      final doc = await docRef.get();
-      if (!doc.exists) continue;
+      final query = await FirebaseFirestore.instance
+          .collection("images")
+          .where("ownerId", isEqualTo: uid)
+          .get();
 
-      final chunksSnapshot = await docRef.collection("chunks").get();
+      List<Uint8List> images = [];
 
-      final sortedChunks = chunksSnapshot.docs
-          .map((d) => MapEntry(int.parse(d.id), d.data()["data"] as String)).toList()
-        ..sort((a, b) => a.key.compareTo(b.key));
+      for (var doc in query.docs) {
+        final docRef = doc.reference;
 
-      final convString = sortedChunks.map((e) => e.value).join();
-      images.add(base64Decode(convString));
+        final chunksSnapshot = await docRef.collection("chunks").get();
+
+        final sortedChunks = chunksSnapshot.docs
+            .map((d) => MapEntry(int.parse(d.id), d.data()["data"] as String))
+            .toList()
+          ..sort((a, b) => a.key.compareTo(b.key));
+
+        final base64Str = sortedChunks.map((e) => e.value).join();
+        images.add(base64Decode(base64Str));
+      }
+      //if (!mounted) return;
+      setState(() {
+        imageBytes = images;
+        isLoading = false;
+      });
+
+    } catch (e) {
+      debugPrint("error");
     }
-
-    if (!mounted) return;
-    setState(() {
-      imageBytes = images;
-      isLoading = false;
-    });
   }
-
 
   void signOut() async{
     await context.read<AuthNotifier>().signOut();

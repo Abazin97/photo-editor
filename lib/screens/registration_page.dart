@@ -124,7 +124,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Регистрация", style: TextStyle(color: Colors.white, fontSize: 26.r),),
+                    Text("Регистрация", style: TextStyle(color: Colors.white, fontSize: 26.r, fontFamily: "Press Start 2P"),),
                     SizedBox(height: 10.r),
                     Container(
                       height: 85,

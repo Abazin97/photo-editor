@@ -31,6 +31,10 @@ dev_dependencies:
 flutter:
   assets:
     - assets/
+  fonts:
+    - family: PressStart2P
+    - fonts:
+      - asset: assets/PressStart2P-Regular.ttf
   uses-material-design: true
 
 flutter_launcher_icons:
